@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Day Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .time-slot {
+            min-height: 80px;
+        }
+        .action-item {
+            touch-action: none;
+            user-select: none;
+        }
+        .action-item.dragging {
+            opacity: 0.5;
+            transform: scale(1.05);
+        }
+        .time-slot.highlight {
+            background-color: rgba(147, 197, 253, 0.3);
+        }
+        #newActionModal {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        #newActionModal.hidden {
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="mb-8 text-center">
+            <h1 class="text-4xl font-bold text-indigo-700 mb-2">Daily Planner</h1>
+            <p class="text-gray-600">Drag and drop actions to plan your perfect day</p>
+            <button id="addActionBtn" class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center mx-auto">
+                <i class="fas fa-plus mr-2"></i> Add New Action
+            </button>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Actions Pool -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-tasks mr-2 text-indigo-500"></i> Available Actions
+                </h2>
+                <div id="actionsPool" class="space-y-3 min-h-[300px]">
+                    <!-- Action items will be added here -->
+                </div>
+            </div>
+
+            <!-- Day Planner -->
+            <div class="bg-white rounded-xl shadow-md p-6 md:col-span-1 lg:col-span-2">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="far fa-calendar-alt mr-2 text-indigo-500"></i> My Day
+                </h2>
+                <div id="dayPlanner" class="space-y-4">
+                    <!-- Time slots will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Action Modal -->
+    <div id="newActionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-gray-800">Create New Action</h3>
+                <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="newActionForm" class="space-y-4">
+                <div>
+                    <label for="actionName" class="block text-sm font-medium text-gray-700 mb-1">Action Name</label>
+                    <input type="text" id="actionName" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label for="actionDuration" class="block text-sm font-medium text-gray-700 mb-1">Duration (minutes)</label>
+                    <input type="number" id="actionDuration" min="5" max="240" value="30" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label for="actionColor" class="block text-sm font-medium text-gray-700 mb-1">Color</label>
+                    <select id="actionColor" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="bg-blue-100 border-blue-300 text-blue-800">Blue</option>
+                        <option value="bg-green-100 border-green-300 text-green-800">Green</option>
+                        <option value="bg-yellow-100 border-yellow-300 text-yellow-800">Yellow</option>
+                        <option value="bg-red-100 border-red-300 text-red-800">Red</option>
+                        <option value="bg-purple-100 border-purple-300 text-purple-800">Purple</option>
+                        <option value="bg-pink-100 border-pink-300 text-pink-800">Pink</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="actionIcon" class="block text-sm font-medium text-gray-700 mb-1">Icon</label>
+                    <select id="actionIcon" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="fa-dumbbell">Exercise</option>
+                        <option value="fa-utensils">Meal</option>
+                        <option value="fa-briefcase">Work</option>
+                        <option value="fa-book">Study</option>
+                        <option value="fa-walking">Walk</option>
+                        <option value="fa-tv">Relax</option>
+                        <option value="fa-users">Social</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+                    Create Action
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize time slots
+            const dayPlanner = document.getElementById('dayPlanner');
+            const hours = Array.from({length: 16}, (_, i) => i + 6); // From 6 AM to 9 PM
+            
+            hours.forEach(hour => {
+                const timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot border-b border-gray-200 pb-2 relative';
+                timeSlot.dataset.hour = hour;
+                
+                const timeLabel = document.createElement('div');
+                timeLabel.className = 'text-sm font-medium text-gray-500 mb-1 sticky top-0 bg-white z-10 py-1';
+                timeLabel.textContent = `${hour}:00 - ${hour + 1}:00`;
+                
+                timeSlot.appendChild(timeLabel);
+                dayPlanner.appendChild(timeSlot);
+            });
+
+            // Sample actions
+            const sampleActions = [
+                { id: 1, name: 'Morning Exercise', duration: 30, color: 'bg-blue-100 border-blue-300 text-blue-800', icon: 'fa-dumbbell' },
+                { id: 2, name: 'Breakfast', duration: 20, color: 'bg-green-100 border-green-300 text-green-800', icon: 'fa-utensils' },
+                { id: 3, name: 'Work Session', duration: 60, color: 'bg-yellow-100 border-yellow-300 text-yellow-800', icon: 'fa-briefcase' },
+                { id: 4, name: 'Lunch Break', duration: 30, color: 'bg-red-100 border-red-300 text-red-800', icon: 'fa-utensils' },
+                { id: 5, name: 'Study Time', duration: 45, color: 'bg-purple-100 border-purple-300 text-purple-800', icon: 'fa-book' },
+                { id: 6, name: 'Evening Walk', duration: 25, color: 'bg-pink-100 border-pink-300 text-pink-800', icon: 'fa-walking' }
+            ];
+
+            const actionsPool = document.getElementById('actionsPool');
+            
+            // Render sample actions
+            sampleActions.forEach(action => {
+                renderActionItem(action, actionsPool);
+            });
+
+            // Modal handling
+            const addActionBtn = document.getElementById('addActionBtn');
+            const newActionModal = document.getElementById('newActionModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const newActionForm = document.getElementById('newActionForm');
+
+            addActionBtn.addEventListener('click', () => {
+                newActionModal.classList.remove('hidden');
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                newActionModal.classList.add('hidden');
+            });
+
+            newActionForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const actionName = document.getElementById('actionName').value;
+                const actionDuration = parseInt(document.getElementById('actionDuration').value);
+                const actionColor = document.getElementById('actionColor').value;
+                const actionIcon = document.getElementById('actionIcon').value;
+                
+                const newAction = {
+                    id: Date.now(),
+                    name: actionName,
+                    duration: actionDuration,
+                    color: actionColor,
+                    icon: actionIcon
+                };
+                
+                renderActionItem(newAction, actionsPool);
+                newActionForm.reset();
+                newActionModal.classList.add('hidden');
+            });
+
+            // Function to render action item
+            function renderActionItem(action, container) {
+                const actionItem = document.createElement('div');
+                actionItem.className = `action-item p-3 rounded-lg border ${action.color} cursor-move flex items-center justify-between`;
+                actionItem.draggable = true;
+                actionItem.dataset.id = action.id;
+                actionItem.dataset.duration = action.duration;
+                
+                actionItem.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fas ${action.icon} mr-2"></i>
+                        <span>${action.name}</span>
+                    </div>
+                    <span class="text-xs bg-white bg-opacity-50 px-2 py-1 rounded">${action.duration} min</span>
+                `;
+                
+                // Drag events
+                actionItem.addEventListener('dragstart', handleDragStart);
+                actionItem.addEventListener('dragend', handleDragEnd);
+                
+                container.appendChild(actionItem);
+            }
+
+            // Drag and drop functionality
+            let draggedItem = null;
+            let draggedItemDuration = 0;
+
+            function handleDragStart(e) {
+                draggedItem = e.target;
+                draggedItemDuration = parseInt(e.target.dataset.duration);
+                e.target.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', e.target.dataset.id);
+                e.dataTransfer.effectAllowed = 'move';
+            }
+
+            function handleDragEnd(e) {
+                e.target.classList.remove('dragging');
+                document.querySelectorAll('.time-slot').forEach(slot => {
+                    slot.classList.remove('highlight');
+                });
+            }
+
+            // Time slot drag events
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    
+                    // Highlight potential drop targets
+                    document.querySelectorAll('.time-slot').forEach(s => {
+                        s.classList.remove('highlight');
+                    });
+                    
+                    this.classList.add('highlight');
+                });
+                
+                slot.addEventListener('dragleave', function() {
+                    this.classList.remove('highlight');
+                });
+                
+                slot.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('highlight');
+                    
+                    if (draggedItem && draggedItem.parentNode === actionsPool) {
+                        // Clone the item if dragging from actions pool
+                        const clonedItem = draggedItem.cloneNode(true);
+                        clonedItem.addEventListener('dragstart', handleDragStart);
+                        clonedItem.addEventListener('dragend', handleDragEnd);
+                        
+                        // Add to time slot
+                        this.appendChild(clonedItem);
+                        
+                        // Add delete button
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'absolute top-1 right-1 text-xs text-red-500 hover:text-red-700';
+                        deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+                        deleteBtn.addEventListener('click', function() {
+                            clonedItem.remove();
+                        });
+                        
+                        clonedItem.appendChild(deleteBtn);
+                    } else if (draggedItem) {
+                        // Move existing item to new time slot
+                        this.appendChild(draggedItem);
+                    }
+                });
+            });
+
+            // Close modal when clicking outside
+            newActionModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
