@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Planner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #2563eb;
+      --background: #f5f7fa;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --radius: 12px;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", sans-serif;
+    }
+    body {
+      background: var(--background);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      padding: 32px;
+      max-width: 480px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    #dateDisplay {
+      font-size: 0.95rem;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    form {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: var(--radius);
+      font-size: 1rem;
+    }
+    button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 12px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background: #1e4ed8;
+    }
+    ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .task {
+      background: #f9fafb;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #e5e7eb;
+    }
+    .task span {
+      color: var(--text);
+    }
+    .delete {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .delete:hover {
+      color: #ef4444;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Daily Planner</h1>
+    <div id="dateDisplay"></div>
+    <form id="taskForm" autocomplete="off">
+      <input type="text" id="taskInput" placeholder="Add a new task..." required />
+      <button type="submit">Add</button>
+    </form>
+    <ul id="taskList"></ul>
+  </div>
+
+  <script>
+    (function () {
+      const dateDisplay = document.getElementById("dateDisplay");
+      dateDisplay.textContent = new Date().toLocaleDateString(undefined, {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
+
+      const form = document.getElementById("taskForm");
+      const input = document.getElementById("taskInput");
+      const list = document.getElementById("taskList");
+
+      // Load saved tasks
+      const saved = JSON.parse(localStorage.getItem("tasks") || "[]");
+      saved.forEach((t) => addTaskElement(t));
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const text = input.value.trim();
+        if (text) {
+          addTaskElement(text);
+          saveTasks();
+          input.value = "";
+          input.focus();
+        }
+      });
+
+      function addTaskElement(text) {
+        const li = document.createElement("li");
+        li.className = "task";
+        const span = document.createElement("span");
+        span.textContent = text;
+        const del = document.createElement("button");
+        del.className = "delete";
+        del.innerHTML = "&times;";
+        del.addEventListener("click", () => {
+          li.remove();
+          saveTasks();
+        });
+        li.appendChild(span);
+        li.appendChild(del);
+        list.appendChild(li);
+      }
+
+      function saveTasks() {
+        const tasks = [...list.querySelectorAll(".task span")]?.map((s) => s.textContent);
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+      }
+    })();
+  </script>
+</body>
+</html>
