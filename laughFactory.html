@@ -8,15 +8,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .gradient-bg {
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            background: linear-gradient(135deg, #8a2be2 0%, #4b0082 100%);
         }
         .joke-card {
             transition: all 0.3s ease;
-            min-height: 200px;
+            min-height: 250px;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f0ff 100%);
         }
         .joke-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 30px rgba(138, 43, 226, 0.2);
         }
         .pulse {
             animation: pulse 2s infinite;
@@ -30,86 +31,177 @@
             animation: fadeIn 0.8s ease-in;
         }
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .category-chip {
+            transition: all 0.2s ease;
+        }
+        .category-chip:hover {
+            transform: scale(1.05);
+        }
+        .category-chip.active {
+            background: linear-gradient(135deg, #8a2be2 0%, #4b0082 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        }
+        .joke-emoji {
+            transition: all 0.5s ease;
+        }
+        .joke-emoji:hover {
+            transform: rotate(15deg) scale(1.2);
+        }
+        .favorite-item {
+            transition: all 0.3s ease;
+        }
+        .favorite-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .rating-stars {
+            color: #ffc107;
+        }
+        .dark-overlay {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .modal-content {
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body class="font-sans bg-gray-100">
+<body class="font-sans bg-gray-50">
     <!-- Navigation -->
-    <nav class="bg-purple-800 text-white shadow-lg sticky top-0 z-50">
+    <nav class="gradient-bg text-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <i class="fas fa-laugh-squint text-2xl text-yellow-300"></i>
-                <span class="text-xl font-bold">Laugh Factory</span>
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-laugh-squint text-3xl text-yellow-300"></i>
+                <span class="text-2xl font-bold">Laugh Factory</span>
             </div>
-            <div class="hidden md:flex space-x-6">
-                <a href="#home" class="hover:text-yellow-300 transition">Home</a>
-                <a href="#generator" class="hover:text-yellow-300 transition">Joke Generator</a>
-                <a href="#categories" class="hover:text-yellow-300 transition">Categories</a>
-                <a href="#favorites" class="hover:text-yellow-300 transition">Favorites</a>
+            <div class="hidden md:flex space-x-8">
+                <a href="#home" class="hover:text-yellow-300 transition flex items-center">
+                    <i class="fas fa-home mr-2"></i> Home
+                </a>
+                <a href="#generator" class="hover:text-yellow-300 transition flex items-center">
+                    <i class="fas fa-random mr-2"></i> Generator
+                </a>
+                <a href="#categories" class="hover:text-yellow-300 transition flex items-center">
+                    <i class="fas fa-tags mr-2"></i> Categories
+                </a>
+                <a href="#favorites" class="hover:text-yellow-300 transition flex items-center">
+                    <i class="fas fa-heart mr-2"></i> Favorites
+                </a>
             </div>
-            <button class="md:hidden text-xl" id="menu-btn">
+            <button class="md:hidden text-2xl" id="menu-btn">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
         <!-- Mobile Menu -->
-        <div class="md:hidden hidden bg-purple-700 px-4 py-2" id="mobile-menu">
-            <a href="#home" class="block py-2 hover:text-yellow-300">Home</a>
-            <a href="#generator" class="block py-2 hover:text-yellow-300">Joke Generator</a>
-            <a href="#categories" class="block py-2 hover:text-yellow-300">Categories</a>
-            <a href="#favorites" class="block py-2 hover:text-yellow-300">Favorites</a>
+        <div class="md:hidden hidden bg-purple-900 px-4 py-3" id="mobile-menu">
+            <a href="#home" class="block py-3 hover:text-yellow-300 transition flex items-center">
+                <i class="fas fa-home mr-3"></i> Home
+            </a>
+            <a href="#generator" class="block py-3 hover:text-yellow-300 transition flex items-center">
+                <i class="fas fa-random mr-3"></i> Generator
+            </a>
+            <a href="#categories" class="block py-3 hover:text-yellow-300 transition flex items-center">
+                <i class="fas fa-tags mr-3"></i> Categories
+            </a>
+            <a href="#favorites" class="block py-3 hover:text-yellow-300 transition flex items-center">
+                <i class="fas fa-heart mr-3"></i> Favorites
+            </a>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="gradient-bg text-white py-20">
-        <div class="container mx-auto px-4 text-center">
-            <h1 class="text-4xl md:text-6xl font-bold mb-6">Need a Good Laugh?</h1>
-            <p class="text-xl mb-8 max-w-2xl mx-auto">Get ready to chuckle with our collection of hilarious jokes. Perfect for brightening your day!</p>
-            <a href="#generator" class="bg-white text-purple-800 px-8 py-4 rounded-full font-bold hover:bg-yellow-100 transition inline-block pulse">
-                <i class="fas fa-grin-squint-tears mr-2"></i> Generate Joke
-            </a>
+    <section id="home" class="relative overflow-hidden gradient-bg text-white py-24">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-0 w-full h-full bg-repeat" style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\" viewBox=\"0 0 100 100\"><text x=\"10\" y=\"50\" font-family=\"Arial\" font-size=\"30\" fill=\"white\">😂</text></svg>');"></div>
+        </div>
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6">Laughter is the Best Medicine</h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">Brighten your day with our collection of hilarious jokes. Perfect for any mood!</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#generator" class="bg-white text-purple-800 px-8 py-4 rounded-full font-bold hover:bg-yellow-100 transition inline-flex items-center justify-center pulse">
+                    <i class="fas fa-grin-squint-tears mr-3 text-xl"></i> Generate Joke
+                </a>
+                <a href="#categories" class="bg-purple-700 text-white px-8 py-4 rounded-full font-bold hover:bg-purple-800 transition inline-flex items-center justify-center">
+                    <i class="fas fa-tags mr-3 text-xl"></i> Browse Categories
+                </a>
+            </div>
         </div>
     </section>
 
     <!-- Joke Generator Section -->
     <section id="generator" class="py-16 bg-white">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12 text-purple-800">Joke Generator</h2>
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-purple-800 mb-3">Joke Generator</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Click the button below to get a random joke. Save your favorites and share the laughter!</p>
+            </div>
             
-            <div class="max-w-2xl mx-auto">
+            <div class="max-w-3xl mx-auto">
                 <!-- Joke Display Card -->
-                <div class="joke-card bg-purple-50 rounded-xl shadow-md p-8 mb-8 flex flex-col items-center justify-center fade-in" id="joke-display">
-                    <div class="text-6xl text-purple-400 mb-6">
+                <div class="joke-card rounded-2xl shadow-xl p-8 mb-8 flex flex-col items-center justify-center fade-in relative overflow-hidden" id="joke-display">
+                    <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 to-indigo-600"></div>
+                    <div class="text-7xl text-purple-400 mb-6 joke-emoji" id="joke-emoji">
                         <i class="fas fa-comment-dots"></i>
                     </div>
-                    <p class="text-xl text-center text-gray-800" id="joke-text">Click the button below to get your first joke!</p>
-                    <p class="text-sm text-purple-600 mt-4" id="joke-category"></p>
+                    <p class="text-2xl text-center text-gray-800 font-medium leading-relaxed" id="joke-text">Ready for a laugh? Click the button below!</p>
+                    <div class="flex items-center mt-6">
+                        <span class="bg-purple-100 text-purple-800 px-4 py-1 rounded-full text-sm font-medium" id="joke-category">Any</span>
+                        <span class="mx-3 text-gray-400">•</span>
+                        <span class="text-sm text-gray-500" id="joke-length">Short</span>
+                    </div>
                 </div>
                 
                 <!-- Controls -->
-                <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                    <button id="new-joke-btn" class="bg-purple-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-purple-700 transition flex items-center justify-center">
-                        <i class="fas fa-sync-alt mr-2"></i> New Joke
+                <div class="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+                    <button id="new-joke-btn" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-4 rounded-lg font-bold hover:from-purple-700 hover:to-indigo-700 transition flex items-center justify-center flex-1">
+                        <i class="fas fa-sync-alt mr-3 text-xl"></i> New Joke
                     </button>
-                    <button id="favorite-btn" class="bg-yellow-500 text-white px-8 py-3 rounded-lg font-bold hover:bg-yellow-600 transition flex items-center justify-center">
-                        <i class="fas fa-heart mr-2"></i> Add to Favorites
+                    <button id="favorite-btn" class="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-8 py-4 rounded-lg font-bold hover:from-pink-600 hover:to-rose-600 transition flex items-center justify-center flex-1">
+                        <i class="fas fa-heart mr-3 text-xl"></i> Add to Favorites
                     </button>
-                    <button id="copy-btn" class="bg-gray-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-gray-700 transition flex items-center justify-center">
+                </div>
+                
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button id="copy-btn" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-700 transition flex items-center justify-center flex-1">
                         <i class="fas fa-copy mr-2"></i> Copy Joke
+                    </button>
+                    <button id="share-btn" class="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition flex items-center justify-center flex-1">
+                        <i class="fas fa-share-alt mr-2"></i> Share
+                    </button>
+                    <button id="rate-btn" class="bg-yellow-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-yellow-600 transition flex items-center justify-center flex-1">
+                        <i class="fas fa-star mr-2"></i> Rate
                     </button>
                 </div>
                 
                 <!-- Category Selector -->
-                <div class="mt-8">
-                    <h3 class="text-lg font-semibold text-purple-800 mb-4">Select Joke Category:</h3>
-                    <div class="flex flex-wrap gap-2 justify-center" id="category-buttons">
-                        <button class="category-btn bg-purple-200 text-purple-800 px-4 py-2 rounded-full hover:bg-purple-300 transition" data-category="any">Any</button>
-                        <button class="category-btn bg-purple-200 text-purple-800 px-4 py-2 rounded-full hover:bg-purple-300 transition" data-category="programming">Programming</button>
-                        <button class="category-btn bg-purple-200 text-purple-800 px-4 py-2 rounded-full hover:bg-purple-300 transition" data-category="pun">Puns</button>
-                        <button class="category-btn bg-purple-200 text-purple-800 px-4 py-2 rounded-full hover:bg-purple-300 transition" data-category="knock-knock">Knock Knock</button>
-                        <button class="category-btn bg-purple-200 text-purple-800 px-4 py-2 rounded-full hover:bg-purple-300 transition" data-category="dad">Dad Jokes</button>
+                <div class="mt-12">
+                    <h3 class="text-xl font-semibold text-purple-800 mb-6 text-center">Select Joke Category</h3>
+                    <div class="flex flex-wrap gap-3 justify-center" id="category-buttons">
+                        <button class="category-chip bg-purple-100 text-purple-800 px-5 py-2 rounded-full hover:bg-purple-200 transition font-medium active" data-category="any">
+                            <i class="fas fa-random mr-2"></i> Any
+                        </button>
+                        <button class="category-chip bg-purple-100 text-purple-800 px-5 py-2 rounded-full hover:bg-purple-200 transition font-medium" data-category="programming">
+                            <i class="fas fa-laptop-code mr-2"></i> Programming
+                        </button>
+                        <button class="category-chip bg-purple-100 text-purple-800 px-5 py-2 rounded-full hover:bg-purple-200 transition font-medium" data-category="pun">
+                            <i class="fas fa-grin-tongue-wink mr-2"></i> Puns
+                        </button>
+                        <button class="category-chip bg-purple-100 text-purple-800 px-5 py-2 rounded-full hover:bg-purple-200 transition font-medium" data-category="knock-knock">
+                            <i class="fas fa-door-open mr-2"></i> Knock Knock
+                        </button>
+                        <button class="category-chip bg-purple-100 text-purple-800 px-5 py-2 rounded-full hover:bg-purple-200 transition font-medium" data-category="dad">
+                            <i class="fas fa-user-tie mr-2"></i> Dad Jokes
+                        </button>
+                        <button class="category-chip bg-purple-100 text-purple-800 px-5 py-2 rounded-full hover:bg-purple-200 transition font-medium" data-category="animal">
+                            <i class="fas fa-paw mr-2"></i> Animal
+                        </button>
                     </div>
                 </div>
             </div>
@@ -117,50 +209,75 @@
     </section>
 
     <!-- Categories Section -->
-    <section id="categories" class="py-16 bg-purple-100">
+    <section id="categories" class="py-16 bg-purple-50">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12 text-purple-800">Joke Categories</h2>
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-purple-800 mb-3">Joke Categories</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">Browse jokes by category. Find your favorite type of humor!</p>
+            </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <!-- Category 1 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition">
-                    <div class="h-48 bg-purple-600 flex items-center justify-center">
-                        <i class="fas fa-laptop-code text-6xl text-white"></i>
+                <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 h-full flex flex-col">
+                    <div class="h-48 bg-gradient-to-r from-purple-500 to-indigo-600 flex items-center justify-center">
+                        <i class="fas fa-laptop-code text-7xl text-white"></i>
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2 text-purple-800">Programming Jokes</h3>
-                        <p class="text-gray-600 mb-4">For developers who appreciate a good tech-related laugh.</p>
-                        <button class="category-btn bg-purple-100 text-purple-800 px-4 py-2 rounded-lg hover:bg-purple-200 transition" data-category="programming">
-                            Get Programming Joke
-                        </button>
+                    <div class="p-6 flex-grow">
+                        <h3 class="text-2xl font-bold mb-3 text-purple-800">Programming</h3>
+                        <p class="text-gray-600 mb-5">Tech humor for developers and coders. Perfect for your next standup meeting!</p>
+                        <div class="mt-auto">
+                            <button class="category-btn w-full bg-purple-100 text-purple-800 px-6 py-3 rounded-lg font-medium hover:bg-purple-200 transition flex items-center justify-center" data-category="programming">
+                                <i class="fas fa-laptop-code mr-3"></i> Get Jokes
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Category 2 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition">
-                    <div class="h-48 bg-yellow-500 flex items-center justify-center">
-                        <i class="fas fa-grin-tongue-wink text-6xl text-white"></i>
+                <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 h-full flex flex-col">
+                    <div class="h-48 bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center">
+                        <i class="fas fa-grin-tongue-wink text-7xl text-white"></i>
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2 text-purple-800">Puns</h3>
-                        <p class="text-gray-600 mb-4">Wordplay at its finest - these jokes are pun-derful!</p>
-                        <button class="category-btn bg-purple-100 text-purple-800 px-4 py-2 rounded-lg hover:bg-purple-200 transition" data-category="pun">
-                            Get Pun
-                        </button>
+                    <div class="p-6 flex-grow">
+                        <h3 class="text-2xl font-bold mb-3 text-purple-800">Puns</h3>
+                        <p class="text-gray-600 mb-5">Clever wordplay that will make you groan and laugh at the same time.</p>
+                        <div class="mt-auto">
+                            <button class="category-btn w-full bg-purple-100 text-purple-800 px-6 py-3 rounded-lg font-medium hover:bg-purple-200 transition flex items-center justify-center" data-category="pun">
+                                <i class="fas fa-grin-tongue-wink mr-3"></i> Get Jokes
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Category 3 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition">
-                    <div class="h-48 bg-red-500 flex items-center justify-center">
-                        <i class="fas fa-door-open text-6xl text-white"></i>
+                <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 h-full flex flex-col">
+                    <div class="h-48 bg-gradient-to-r from-red-500 to-pink-500 flex items-center justify-center">
+                        <i class="fas fa-door-open text-7xl text-white"></i>
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2 text-purple-800">Knock Knock</h3>
-                        <p class="text-gray-600 mb-4">Classic knock-knock jokes that never get old.</p>
-                        <button class="category-btn bg-purple-100 text-purple-800 px-4 py-2 rounded-lg hover:bg-purple-200 transition" data-category="knock-knock">
-                            Knock Knock!
-                        </button>
+                    <div class="p-6 flex-grow">
+                        <h3 class="text-2xl font-bold mb-3 text-purple-800">Knock Knock</h3>
+                        <p class="text-gray-600 mb-5">Classic knock-knock jokes that never get old. Who's there? You'll see!</p>
+                        <div class="mt-auto">
+                            <button class="category-btn w-full bg-purple-100 text-purple-800 px-6 py-3 rounded-lg font-medium hover:bg-purple-200 transition flex items-center justify-center" data-category="knock-knock">
+                                <i class="fas fa-door-open mr-3"></i> Get Jokes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Category 4 -->
+                <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 h-full flex flex-col">
+                    <div class="h-48 bg-gradient-to-r from-green-500 to-teal-500 flex items-center justify-center">
+                        <i class="fas fa-user-tie text-7xl text-white"></i>
+                    </div>
+                    <div class="p-6 flex-grow">
+                        <h3 class="text-2xl font-bold mb-3 text-purple-800">Dad Jokes</h3>
+                        <p class="text-gray-600 mb-5">The cheesiest jokes that only a dad could love. So bad they're good!</p>
+                        <div class="mt-auto">
+                            <button class="category-btn w-full bg-purple-100 text-purple-800 px-6 py-3 rounded-lg font-medium hover:bg-purple-200 transition flex items-center justify-center" data-category="dad">
+                                <i class="fas fa-user-tie mr-3"></i> Get Jokes
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -170,151 +287,408 @@
     <!-- Favorites Section -->
     <section id="favorites" class="py-16 bg-white">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12 text-purple-800">Your Favorite Jokes</h2>
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-purple-800 mb-3">Your Favorite Jokes</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">All your saved jokes in one place. Revisit them anytime!</p>
+            </div>
             
-            <div class="max-w-3xl mx-auto">
-                <div class="bg-purple-50 rounded-xl shadow-inner p-6 min-h-64">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-purple-50 rounded-2xl shadow-inner p-8 min-h-64">
                     <div id="favorites-list" class="space-y-4">
-                        <div class="text-center py-8 text-gray-500" id="empty-favorites-message">
-                            <i class="fas fa-heart text-4xl mb-4 text-purple-300"></i>
-                            <p>Your favorite jokes will appear here. Click the heart icon to save jokes!</p>
+                        <div class="text-center py-12 text-gray-500" id="empty-favorites-message">
+                            <i class="fas fa-heart text-5xl mb-6 text-purple-300"></i>
+                            <h3 class="text-2xl font-medium text-gray-600 mb-3">No favorites yet</h3>
+                            <p class="max-w-md mx-auto">Click the <i class="fas fa-heart text-pink-500"></i> button on jokes you like to save them here.</p>
                         </div>
                     </div>
                 </div>
                 
-                <div class="mt-6 flex justify-end">
-                    <button id="clear-favorites" class="text-red-500 hover:text-red-700 transition flex items-center">
-                        <i class="fas fa-trash-alt mr-2"></i> Clear All Favorites
-                    </button>
+                <div class="mt-8 flex justify-between items-center">
+                    <div class="text-sm text-gray-500" id="favorites-count">
+                        <span id="favorites-count-number">0</span> jokes saved
+                    </div>
+                    <div class="flex gap-3">
+                        <button id="export-favorites" class="bg-purple-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-purple-700 transition flex items-center">
+                            <i class="fas fa-file-export mr-2"></i> Export
+                        </button>
+                        <button id="clear-favorites" class="bg-red-500 text-white px-5 py-2 rounded-lg font-medium hover:bg-red-600 transition flex items-center">
+                            <i class="fas fa-trash-alt mr-2"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 bg-gradient-to-r from-purple-800 to-indigo-900 text-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Laugh Factory Stats</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <div class="bg-white bg-opacity-10 rounded-2xl p-8 text-center backdrop-filter backdrop-blur-sm">
+                    <div class="text-5xl font-bold mb-3" id="total-jokes-count">0</div>
+                    <h3 class="text-xl font-medium">Total Jokes</h3>
+                    <p class="text-purple-200 mt-2">In our database</p>
+                </div>
+                <div class="bg-white bg-opacity-10 rounded-2xl p-8 text-center backdrop-filter backdrop-blur-sm">
+                    <div class="text-5xl font-bold mb-3" id="jokes-generated">0</div>
+                    <h3 class="text-xl font-medium">Jokes Generated</h3>
+                    <p class="text-purple-200 mt-2">By our users</p>
+                </div>
+                <div class="bg-white bg-opacity-10 rounded-2xl p-8 text-center backdrop-filter backdrop-blur-sm">
+                    <div class="text-5xl font-bold mb-3" id="favorites-stats">0</div>
+                    <h3 class="text-xl font-medium">Favorites Saved</h3>
+                    <p class="text-purple-200 mt-2">By our users</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Newsletter -->
-    <section class="py-12 bg-purple-800 text-white">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-2xl font-bold mb-4">Get Daily Jokes</h2>
-            <p class="mb-6 max-w-2xl mx-auto">Subscribe to receive a fresh joke in your inbox every morning!</p>
-            <div class="max-w-md mx-auto flex">
-                <input type="email" placeholder="Your email address" class="flex-grow px-4 py-3 rounded-l-lg focus:outline-none text-gray-800">
-                <button class="bg-yellow-500 px-6 py-3 rounded-r-lg font-bold hover:bg-yellow-600 transition">
-                    Subscribe
-                </button>
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl shadow-xl overflow-hidden">
+                <div class="md:flex">
+                    <div class="md:w-1/2 p-10 text-white flex flex-col justify-center">
+                        <h2 class="text-3xl font-bold mb-4">Get Daily Jokes</h2>
+                        <p class="mb-6">Subscribe to receive a fresh joke in your inbox every morning! Perfect way to start your day with a smile.</p>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-white hover:text-purple-200 transition">
+                                <i class="fab fa-twitter text-2xl"></i>
+                            </a>
+                            <a href="#" class="text-white hover:text-purple-200 transition">
+                                <i class="fab fa-facebook text-2xl"></i>
+                            </a>
+                            <a href="#" class="text-white hover:text-purple-200 transition">
+                                <i class="fab fa-instagram text-2xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2 p-10 bg-white">
+                        <h3 class="text-xl font-bold text-purple-800 mb-4">Subscribe to Newsletter</h3>
+                        <form id="newsletter-form">
+                            <div class="mb-4">
+                                <input type="text" placeholder="Your Name" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            </div>
+                            <div class="mb-4">
+                                <input type="email" placeholder="Your Email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                            </div>
+                            <div class="mb-4">
+                                <select class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="">Select preferred category</option>
+                                    <option value="any">Any Joke</option>
+                                    <option value="programming">Programming</option>
+                                    <option value="pun">Puns</option>
+                                    <option value="knock-knock">Knock Knock</option>
+                                    <option value="dad">Dad Jokes</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full bg-purple-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-purple-700 transition">
+                                Subscribe Now
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-purple-900 text-white py-8">
+    <footer class="bg-purple-900 text-white py-12">
         <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
-                    <h3 class="text-xl font-bold mb-4 flex items-center">
-                        <i class="fas fa-laugh-squint mr-2 text-yellow-300"></i> Laugh Factory
+                    <h3 class="text-xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-laugh-squint mr-3 text-yellow-300"></i> Laugh Factory
                     </h3>
-                    <p>Bringing joy and laughter one joke at a time. Because everyone needs a good laugh!</p>
+                    <p class="mb-4">Bringing joy and laughter one joke at a time. Because everyone needs a good laugh!</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="hover:text-yellow-300 transition"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="hover:text-yellow-300 transition"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="hover:text-yellow-300 transition"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="hover:text-yellow-300 transition"><i class="fab fa-tiktok"></i></a>
+                    </div>
                 </div>
                 <div>
                     <h3 class="text-lg font-bold mb-4">Quick Links</h3>
                     <ul class="space-y-2">
-                        <li><a href="#home" class="hover:text-yellow-300 transition">Home</a></li>
-                        <li><a href="#generator" class="hover:text-yellow-300 transition">Joke Generator</a></li>
-                        <li><a href="#categories" class="hover:text-yellow-300 transition">Categories</a></li>
-                        <li><a href="#favorites" class="hover:text-yellow-300 transition">Favorites</a></li>
+                        <li><a href="#home" class="hover:text-yellow-300 transition flex items-center"><i class="fas fa-chevron-right mr-2 text-xs"></i> Home</a></li>
+                        <li><a href="#generator" class="hover:text-yellow-300 transition flex items-center"><i class="fas fa-chevron-right mr-2 text-xs"></i> Joke Generator</a></li>
+                        <li><a href="#categories" class="hover:text-yellow-300 transition flex items-center"><i class="fas fa-chevron-right mr-2 text-xs"></i> Categories</a></li>
+                        <li><a href="#favorites" class="hover:text-yellow-300 transition flex items-center"><i class="fas fa-chevron-right mr-2 text-xs"></i> Favorites</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold mb-4">Connect</h3>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-2xl hover:text-yellow-300 transition"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-2xl hover:text-yellow-300 transition"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="text-2xl hover:text-yellow-300 transition"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-2xl hover:text-yellow-300 transition"><i class="fab fa-tiktok"></i></a>
-                    </div>
+                    <h3 class="text-lg font-bold mb-4">Categories</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-yellow-300 transition flex items-center" data-category="programming"><i class="fas fa-chevron-right mr-2 text-xs"></i> Programming</a></li>
+                        <li><a href="#" class="hover:text-yellow-300 transition flex items-center" data-category="pun"><i class="fas fa-chevron-right mr-2 text-xs"></i> Puns</a></li>
+                        <li><a href="#" class="hover:text-yellow-300 transition flex items-center" data-category="knock-knock"><i class="fas fa-chevron-right mr-2 text-xs"></i> Knock Knock</a></li>
+                        <li><a href="#" class="hover:text-yellow-300 transition flex items-center" data-category="dad"><i class="fas fa-chevron-right mr-2 text-xs"></i> Dad Jokes</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Contact</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mr-3 mt-1 text-purple-300"></i>
+                            <span>hello@laughfactory.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone-alt mr-3 mt-1 text-purple-300"></i>
+                            <span>+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-3 mt-1 text-purple-300"></i>
+                            <span>123 Laugh Street, Humor City</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
-            <div class="border-t border-purple-700 mt-8 pt-6 text-center text-sm">
+            <div class="border-t border-purple-800 mt-10 pt-6 text-center text-sm">
                 <p>&copy; 2023 Laugh Factory. All jokes are meant for entertainment purposes only.</p>
             </div>
         </div>
     </footer>
 
+    <!-- Rating Modal -->
+    <div id="rating-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden dark-overlay">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-purple-800">Rate This Joke</h3>
+                <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mb-6">
+                <p class="text-gray-700 mb-4" id="joke-to-rate"></p>
+                <div class="flex justify-center space-x-2 text-3xl rating-stars mb-4">
+                    <i class="fas fa-star cursor-pointer hover:scale-110 transition" data-rating="1"></i>
+                    <i class="fas fa-star cursor-pointer hover:scale-110 transition" data-rating="2"></i>
+                    <i class="fas fa-star cursor-pointer hover:scale-110 transition" data-rating="3"></i>
+                    <i class="fas fa-star cursor-pointer hover:scale-110 transition" data-rating="4"></i>
+                    <i class="fas fa-star cursor-pointer hover:scale-110 transition" data-rating="5"></i>
+                </div>
+                <p class="text-center text-sm text-gray-500" id="rating-text">Click stars to rate</p>
+            </div>
+            <button id="submit-rating" class="w-full bg-purple-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-purple-700 transition">
+                Submit Rating
+            </button>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="export-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden dark-overlay">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-purple-800">Export Favorites</h3>
+                <button id="close-export-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mb-6">
+                <p class="text-gray-700 mb-4">Choose format to export your favorite jokes:</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <button class="export-format bg-gray-100 hover:bg-gray-200 p-4 rounded-lg transition flex flex-col items-center" data-format="text">
+                        <i class="fas fa-file-alt text-3xl text-purple-600 mb-2"></i>
+                        <span>Text File</span>
+                    </button>
+                    <button class="export-format bg-gray-100 hover:bg-gray-200 p-4 rounded-lg transition flex flex-col items-center" data-format="json">
+                        <i class="fas fa-file-code text-3xl text-purple-600 mb-2"></i>
+                        <span>JSON File</span>
+                    </button>
+                    <button class="export-format bg-gray-100 hover:bg-gray-200 p-4 rounded-lg transition flex flex-col items-center" data-format="pdf">
+                        <i class="fas fa-file-pdf text-3xl text-purple-600 mb-2"></i>
+                        <span>PDF</span>
+                    </button>
+                    <button class="export-format bg-gray-100 hover:bg-gray-200 p-4 rounded-lg transition flex flex-col items-center" data-format="csv">
+                        <i class="fas fa-file-csv text-3xl text-purple-600 mb-2"></i>
+                        <span>CSV</span>
+                    </button>
+                </div>
+            </div>
+            <button id="cancel-export" class="w-full bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition">
+                Cancel
+            </button>
+        </div>
+    </div>
+
     <script>
-        // Sample joke database
+        // Enhanced joke database with more jokes and emojis
         const jokesDatabase = {
             'any': [
-                "Why don't scientists trust atoms? Because they make up everything!",
-                "Did you hear about the mathematician who's afraid of negative numbers? He'll stop at nothing to avoid them.",
-                "Why don't eggs tell jokes? They'd crack each other up.",
-                "I'm reading a book about anti-gravity. It's impossible to put down!",
-                "What do you call a fake noodle? An impasta!"
+                {text: "Why don't scientists trust atoms? Because they make up everything!", emoji: "🔬"},
+                {text: "Did you hear about the mathematician who's afraid of negative numbers? He'll stop at nothing to avoid them.", emoji: "🧮"},
+                {text: "Why don't eggs tell jokes? They'd crack each other up.", emoji: "🥚"},
+                {text: "I'm reading a book about anti-gravity. It's impossible to put down!", emoji: "📚"},
+                {text: "What do you call a fake noodle? An impasta!", emoji: "🍝"},
+                {text: "How do you organize a space party? You planet!", emoji: "🚀"},
+                {text: "Why did the scarecrow win an award? Because he was outstanding in his field!", emoji: "🌾"},
+                {text: "What do you call a bear with no teeth? A gummy bear!", emoji: "🐻"},
+                {text: "Why can't you explain puns to kleptomaniacs? They always take things literally.", emoji: "🦹"},
+                {text: "I used to be a baker, but I couldn't make enough dough.", emoji: "🍞"}
             ],
             'programming': [
-                "Why do programmers prefer dark mode? Because light attracts bugs!",
-                "How many programmers does it take to change a light bulb? None, that's a hardware problem.",
-                "Why do Java developers wear glasses? Because they can't C#!",
-                "A SQL query walks into a bar, walks up to two tables and asks, 'Can I join you?'",
-                "Why was the JavaScript developer sad? Because he didn't know how to 'null' his feelings."
+                {text: "Why do programmers prefer dark mode? Because light attracts bugs!", emoji: "🐛"},
+                {text: "How many programmers does it take to change a light bulb? None, that's a hardware problem.", emoji: "💡"},
+                {text: "Why do Java developers wear glasses? Because they can't C#!", emoji: "👓"},
+                {text: "A SQL query walks into a bar, walks up to two tables and asks, 'Can I join you?'", emoji: "🍻"},
+                {text: "Why was the JavaScript developer sad? Because he didn't know how to 'null' his feelings.", emoji: "😢"},
+                {text: "Why did the developer go broke? Because he used up all his cache.", emoji: "💸"},
+                {text: "Why did the programmer quit his job? Because he didn't get arrays.", emoji: "🧑‍💻"},
+                {text: "How do you comfort a JavaScript bug? You console it.", emoji: "🪲"},
+                {text: "Why did the functional programmer get thrown out of school? Because he refused to change classes.", emoji: "🎓"},
+                {text: "What's the object-oriented way to become wealthy? Inheritance.", emoji: "💰"}
             ],
             'pun': [
-                "I'm reading a book about anti-gravity. It's impossible to put down!",
-                "Did you hear about the claustrophobic astronaut? He just needed a little space.",
-                "Why don't skeletons fight each other? They don't have the guts.",
-                "What do you call a bear with no teeth? A gummy bear!",
-                "I used to be a baker, but I couldn't make enough dough."
+                {text: "I'm reading a book about anti-gravity. It's impossible to put down!", emoji: "📚"},
+                {text: "Did you hear about the claustrophobic astronaut? He just needed a little space.", emoji: "👨‍🚀"},
+                {text: "Why don't skeletons fight each other? They don't have the guts.", emoji: "💀"},
+                {text: "What do you call a bear with no teeth? A gummy bear!", emoji: "🐻"},
+                {text: "I used to be a baker, but I couldn't make enough dough.", emoji: "🍞"},
+                {text: "What did the grape say when it got stepped on? Nothing, it just let out a little wine.", emoji: "🍇"},
+                {text: "I'm on a seafood diet. Every time I see food, I eat it.", emoji: "🦞"},
+                {text: "What do you call a fake noodle? An impasta!", emoji: "🍝"},
+                {text: "How does a penguin build its house? Igloos it together.", emoji: "🐧"},
+                {text: "Why did the scarecrow win an award? Because he was outstanding in his field!", emoji: "🌾"}
             ],
             'knock-knock': [
-                "Knock knock. Who's there? Boo. Boo who? Don't cry, it's just a joke!",
-                "Knock knock. Who's there? Lettuce. Lettuce who? Lettuce in, it's cold out here!",
-                "Knock knock. Who's there? Tank. Tank who? You're welcome!",
-                "Knock knock. Who's there? Alpaca. Alpaca who? Alpaca the suitcase, you load up the car!",
-                "Knock knock. Who's there? Cash. Cash who? No thanks, I prefer peanuts."
+                {text: "Knock knock. Who's there? Boo. Boo who? Don't cry, it's just a joke!", emoji: "👻"},
+                {text: "Knock knock. Who's there? Lettuce. Lettuce who? Lettuce in, it's cold out here!", emoji: "🥬"},
+                {text: "Knock knock. Who's there? Tank. Tank who? You're welcome!", emoji: "🤗"},
+                {text: "Knock knock. Who's there? Alpaca. Alpaca who? Alpaca the suitcase, you load up the car!", emoji: "🦙"},
+                {text: "Knock knock. Who's there? Cash. Cash who? No thanks, I prefer peanuts.", emoji: "🥜"},
+                {text: "Knock knock. Who's there? Harry. Harry who? Harry up and answer the door!", emoji: "🏃"},
+                {text: "Knock knock. Who's there? Dishes. Dishes who? Dishes the police, open up!", emoji: "👮"},
+                {text: "Knock knock. Who's there? A little old lady. A little old lady who? I didn't know you could yodel!", emoji: "👵"},
+                {text: "Knock knock. Who's there? Cows go. Cows go who? No, cows go moo!", emoji: "🐄"},
+                {text: "Knock knock. Who's there? Nobel. Nobel who? Nobel... that's why I knocked!", emoji: "🏆"}
             ],
             'dad': [
-                "I'm on a seafood diet. Every time I see food, I eat it.",
-                "What do you call a factory that makes okay products? A satisfactory.",
-                "How do you make a tissue dance? Put a little boogie in it!",
-                "Why did the scarecrow win an award? Because he was outstanding in his field!",
-                "What do you call a fish wearing a bowtie? Sofishticated."
+                {text: "I'm on a seafood diet. Every time I see food, I eat it.", emoji: "🦞"},
+                {text: "What do you call a factory that makes okay products? A satisfactory.", emoji: "🏭"},
+                {text: "How do you make a tissue dance? Put a little boogie in it!", emoji: "💃"},
+                {text: "Why did the scarecrow win an award? Because he was outstanding in his field!", emoji: "🌾"},
+                {text: "What do you call a fish wearing a bowtie? Sofishticated.", emoji: "🎩"},
+                {text: "What's brown and sticky? A stick.", emoji: "🪵"},
+                {text: "How do you catch a squirrel? Climb a tree and act like a nut!", emoji: "🐿️"},
+                {text: "Why don't eggs tell jokes? They'd crack each other up.", emoji: "🥚"},
+                {text: "What do you call a fake noodle? An impasta!", emoji: "🍝"},
+                {text: "I used to be a baker, but I couldn't make enough dough.", emoji: "🍞"}
+            ],
+            'animal': [
+                {text: "What do you call a bear with no teeth? A gummy bear!", emoji: "🐻"},
+                {text: "Why don't elephants use computers? They're afraid of the mouse!", emoji: "🐘"},
+                {text: "What do you get when you cross a snowman and a dog? Frostbite!", emoji: "❄️"},
+                {text: "Why did the cow jump over the moon? Because the farmer had cold hands!", emoji: "🐄"},
+                {text: "What do you call a fish wearing a bowtie? Sofishticated.", emoji: "🎩"},
+                {text: "How do you catch a squirrel? Climb a tree and act like a nut!", emoji: "🐿️"},
+                {text: "Why did the chicken go to the seance? To get to the other side!", emoji: "🐔"},
+                {text: "What do you call a sleeping bull? A bulldozer!", emoji: "🐂"},
+                {text: "Why don't sharks eat clowns? Because they taste funny!", emoji: "🦈"},
+                {text: "What do you call a camel with no humps? Humphrey!", emoji: "🐫"}
             ]
         };
 
         // DOM elements
         const jokeTextElement = document.getElementById('joke-text');
         const jokeCategoryElement = document.getElementById('joke-category');
+        const jokeEmojiElement = document.getElementById('joke-emoji');
+        const jokeLengthElement = document.getElementById('joke-length');
         const newJokeBtn = document.getElementById('new-joke-btn');
         const favoriteBtn = document.getElementById('favorite-btn');
         const copyBtn = document.getElementById('copy-btn');
-        const categoryButtons = document.querySelectorAll('.category-btn');
+        const shareBtn = document.getElementById('share-btn');
+        const rateBtn = document.getElementById('rate-btn');
+        const categoryButtons = document.querySelectorAll('.category-btn, .category-chip');
         const favoritesList = document.getElementById('favorites-list');
         const clearFavoritesBtn = document.getElementById('clear-favorites');
+        const exportFavoritesBtn = document.getElementById('export-favorites');
         const emptyFavoritesMessage = document.getElementById('empty-favorites-message');
         const jokeDisplay = document.getElementById('joke-display');
+        const favoritesCountNumber = document.getElementById('favorites-count-number');
+        const totalJokesCount = document.getElementById('total-jokes-count');
+        const jokesGenerated = document.getElementById('jokes-generated');
+        const favoritesStats = document.getElementById('favorites-stats');
+        
+        // Modal elements
+        const ratingModal = document.getElementById('rating-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const jokeToRateElement = document.getElementById('joke-to-rate');
+        const ratingStars = document.querySelectorAll('.rating-stars i');
+        const ratingText = document.getElementById('rating-text');
+        const submitRatingBtn = document.getElementById('submit-rating');
+        
+        const exportModal = document.getElementById('export-modal');
+        const closeExportModalBtn = document.getElementById('close-export-modal');
+        const exportFormatButtons = document.querySelectorAll('.export-format');
+        const cancelExportBtn = document.getElementById('cancel-export');
         
         // State variables
         let currentCategory = 'any';
         let currentJoke = '';
+        let currentJokeEmoji = '';
         let favorites = JSON.parse(localStorage.getItem('favoriteJokes')) || [];
-
+        let jokesGeneratedCount = parseInt(localStorage.getItem('jokesGeneratedCount')) || 0;
+        let selectedRating = 0;
+        
         // Initialize
+        updateTotalJokesCount();
         updateFavoritesList();
+        updateStats();
         
         // Event listeners
         newJokeBtn.addEventListener('click', generateNewJoke);
         favoriteBtn.addEventListener('click', addToFavorites);
         copyBtn.addEventListener('click', copyJokeToClipboard);
+        shareBtn.addEventListener('click', shareJoke);
+        rateBtn.addEventListener('click', openRatingModal);
+        
         clearFavoritesBtn.addEventListener('click', clearAllFavorites);
+        exportFavoritesBtn.addEventListener('click', openExportModal);
         
         categoryButtons.forEach(button => {
             button.addEventListener('click', () => {
                 // Update active category button
-                categoryButtons.forEach(btn => btn.classList.remove('bg-purple-300', 'font-bold'));
-                button.classList.add('bg-purple-300', 'font-bold');
+                document.querySelectorAll('.category-chip').forEach(btn => btn.classList.remove('active', 'bg-purple-600', 'text-white'));
+                if (button.classList.contains('category-chip')) {
+                    button.classList.add('active', 'bg-purple-600', 'text-white');
+                }
                 
                 // Set new category and generate joke
                 currentCategory = button.dataset.category;
                 generateNewJoke();
+                
+                // Scroll to generator if coming from categories section
+                if (button.closest('#categories')) {
+                    document.querySelector('#generator').scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+        
+        // Rating modal events
+        closeModalBtn.addEventListener('click', closeRatingModal);
+        ratingStars.forEach(star => {
+            star.addEventListener('click', () => {
+                selectedRating = parseInt(star.dataset.rating);
+                updateRatingDisplay();
+            });
+            star.addEventListener('mouseover', () => {
+                highlightStars(parseInt(star.dataset.rating));
+            });
+        });
+        document.querySelector('.rating-stars').addEventListener('mouseout', () => {
+            highlightStars(selectedRating);
+        });
+        submitRatingBtn.addEventListener('click', submitRating);
+        
+        // Export modal events
+        closeExportModalBtn.addEventListener('click', closeExportModal);
+        cancelExportBtn.addEventListener('click', closeExportModal);
+        exportFormatButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                exportFavorites(btn.dataset.format);
             });
         });
         
@@ -349,10 +723,25 @@
         });
         
         // Functions
+        function updateTotalJokesCount() {
+            let count = 0;
+            for (const category in jokesDatabase) {
+                count += jokesDatabase[category].length;
+            }
+            totalJokesCount.textContent = count;
+        }
+        
+        function updateStats() {
+            jokesGenerated.textContent = jokesGeneratedCount;
+            favoritesStats.textContent = favorites.length;
+        }
+        
         function generateNewJoke() {
             const jokes = jokesDatabase[currentCategory];
             const randomIndex = Math.floor(Math.random() * jokes.length);
-            currentJoke = jokes[randomIndex];
+            const jokeObj = jokes[randomIndex];
+            currentJoke = jokeObj.text;
+            currentJokeEmoji = jokeObj.emoji;
             
             // Reset animation
             jokeDisplay.classList.remove('fade-in');
@@ -360,7 +749,23 @@
             jokeDisplay.classList.add('fade-in');
             
             jokeTextElement.textContent = currentJoke;
-            jokeCategoryElement.textContent = `Category: ${formatCategoryName(currentCategory)}`;
+            jokeEmojiElement.innerHTML = currentJokeEmoji;
+            jokeCategoryElement.textContent = formatCategoryName(currentCategory);
+            
+            // Determine joke length
+            const wordCount = currentJoke.split(' ').length;
+            if (wordCount < 10) {
+                jokeLengthElement.textContent = "Short";
+            } else if (wordCount < 20) {
+                jokeLengthElement.textContent = "Medium";
+            } else {
+                jokeLengthElement.textContent = "Long";
+            }
+            
+            // Update generated count
+            jokesGeneratedCount++;
+            localStorage.setItem('jokesGeneratedCount', jokesGeneratedCount);
+            updateStats();
         }
         
         function formatCategoryName(category) {
@@ -376,8 +781,10 @@
             if (!favorites.some(joke => joke.text === currentJoke && joke.category === currentCategory)) {
                 favorites.push({
                     text: currentJoke,
+                    emoji: currentJokeEmoji,
                     category: currentCategory,
-                    date: new Date().toLocaleDateString()
+                    date: new Date().toLocaleDateString(),
+                    rating: 0
                 });
                 
                 // Save to localStorage
@@ -385,16 +792,17 @@
                 
                 // Update UI
                 updateFavoritesList();
+                updateStats();
                 
                 // Show feedback
-                favoriteBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Added!';
+                favoriteBtn.innerHTML = '<i class="fas fa-check mr-3 text-xl"></i> Added!';
                 setTimeout(() => {
-                    favoriteBtn.innerHTML = '<i class="fas fa-heart mr-2"></i> Add to Favorites';
+                    favoriteBtn.innerHTML = '<i class="fas fa-heart mr-3 text-xl"></i> Add to Favorites';
                 }, 2000);
             } else {
-                favoriteBtn.innerHTML = '<i class="fas fa-heart mr-2"></i> Already Saved';
+                favoriteBtn.innerHTML = '<i class="fas fa-heart mr-3 text-xl"></i> Already Saved';
                 setTimeout(() => {
-                    favoriteBtn.innerHTML = '<i class="fas fa-heart mr-2"></i> Add to Favorites';
+                    favoriteBtn.innerHTML = '<i class="fas fa-heart mr-3 text-xl"></i> Add to Favorites';
                 }, 2000);
             }
         }
@@ -410,28 +818,114 @@
             });
         }
         
+        function shareJoke() {
+            if (!currentJoke) return;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out this joke!',
+                    text: currentJoke,
+                    url: window.location.href
+                }).catch(() => {
+                    fallbackShare();
+                });
+            } else {
+                fallbackShare();
+            }
+            
+            function fallbackShare() {
+                const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(currentJoke + " - Shared via Laugh Factory")}&url=${encodeURIComponent(window.location.href)}`;
+                window.open(shareUrl, '_blank');
+            }
+        }
+        
+        function openRatingModal() {
+            if (!currentJoke) return;
+            
+            jokeToRateElement.textContent = currentJoke;
+            selectedRating = 0;
+            updateRatingDisplay();
+            ratingModal.classList.remove('hidden');
+        }
+        
+        function closeRatingModal() {
+            ratingModal.classList.add('hidden');
+        }
+        
+        function highlightStars(upTo) {
+            ratingStars.forEach((star, index) => {
+                if (index < upTo) {
+                    star.classList.add('text-yellow-400');
+                    star.classList.remove('text-gray-300');
+                } else {
+                    star.classList.add('text-gray-300');
+                    star.classList.remove('text-yellow-400');
+                }
+            });
+        }
+        
+        function updateRatingDisplay() {
+            highlightStars(selectedRating);
+            
+            const ratingTexts = [
+                "Click stars to rate",
+                "Poor",
+                "Fair",
+                "Good",
+                "Great",
+                "Excellent"
+            ];
+            
+            ratingText.textContent = ratingTexts[selectedRating];
+        }
+        
+        function submitRating() {
+            if (selectedRating === 0) return;
+            
+            // Find joke in favorites and update rating
+            const jokeIndex = favorites.findIndex(joke => joke.text === currentJoke);
+            if (jokeIndex !== -1) {
+                favorites[jokeIndex].rating = selectedRating;
+                localStorage.setItem('favoriteJokes', JSON.stringify(favorites));
+                updateFavoritesList();
+            }
+            
+            // Show feedback
+            submitRatingBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Rated!';
+            setTimeout(() => {
+                submitRatingBtn.innerHTML = 'Submit Rating';
+                closeRatingModal();
+            }, 1000);
+        }
+        
         function updateFavoritesList() {
             if (favorites.length === 0) {
                 emptyFavoritesMessage.classList.remove('hidden');
                 favoritesList.innerHTML = '';
+                favoritesCountNumber.textContent = '0';
                 return;
             }
             
             emptyFavoritesMessage.classList.add('hidden');
             favoritesList.innerHTML = '';
+            favoritesCountNumber.textContent = favorites.length;
             
             favorites.forEach((joke, index) => {
                 const jokeElement = document.createElement('div');
-                jokeElement.className = 'bg-white p-4 rounded-lg shadow-sm flex justify-between items-start';
+                jokeElement.className = 'favorite-item bg-white p-5 rounded-xl shadow-sm flex justify-between items-start hover:shadow-md transition';
                 jokeElement.innerHTML = `
-                    <div>
-                        <p class="text-gray-800">${joke.text}</p>
-                        <div class="flex items-center mt-2 text-sm text-gray-500">
-                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs mr-2">${formatCategoryName(joke.category)}</span>
-                            <span>${joke.date}</span>
+                    <div class="flex items-start">
+                        <div class="text-3xl mr-4">${joke.emoji}</div>
+                        <div>
+                            <p class="text-gray-800">${joke.text}</p>
+                            <div class="flex items-center mt-3">
+                                <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs mr-3">${formatCategoryName(joke.category)}</span>
+                                <span class="text-xs text-gray-500 mr-3">${joke.date}</span>
+                                ${joke.rating > 0 ? `<span class="text-yellow-500 text-sm"><i class="fas fa-star"></i> ${joke.rating}/5</span>` : ''}
+                            </div>
                         </div>
                     </div>
-                    <button class="remove-favorite text-red-500 hover:text-red-700 ml-4" data-index="${index}">
+                    <button class="remove-favorite text-red-500 hover:text-red-700 ml-4 p-2 rounded-full hover:bg-red-50 transition" data-index="${index}" title="Remove from favorites">
                         <i class="fas fa-times"></i>
                     </button>
                 `;
@@ -452,15 +946,79 @@
             favorites.splice(index, 1);
             localStorage.setItem('favoriteJokes', JSON.stringify(favorites));
             updateFavoritesList();
+            updateStats();
         }
         
         function clearAllFavorites() {
+            if (favorites.length === 0) {
+                alert("You don't have any favorite jokes yet!");
+                return;
+            }
+            
             if (confirm('Are you sure you want to clear all your favorite jokes?')) {
                 favorites = [];
                 localStorage.setItem('favoriteJokes', JSON.stringify(favorites));
                 updateFavoritesList();
+                updateStats();
             }
         }
+        
+        function openExportModal() {
+            if (favorites.length === 0) {
+                alert("You don't have any favorite jokes to export!");
+                return;
+            }
+            
+            exportModal.classList.remove('hidden');
+        }
+        
+        function closeExportModal() {
+            exportModal.classList.add('hidden');
+        }
+        
+        function exportFavorites(format) {
+            let content, mimeType, fileName;
+            
+            switch(format) {
+                case 'text':
+                    content = favorites.map(joke => `${joke.text}\nCategory: ${formatCategoryName(joke.category)}\nDate Saved: ${joke.date}\n${joke.rating > 0 ? `Rating: ${joke.rating}/5\n` : ''}\n`).join('\n');
+                    mimeType = 'text/plain';
+                    fileName = 'favorite-jokes.txt';
+                    break;
+                case 'json':
+                    content = JSON.stringify(favorites, null, 2);
+                    mimeType = 'application/json';
+                    fileName = 'favorite-jokes.json';
+                    break;
+                case 'pdf':
+                    alert('PDF export would be implemented with a library like jsPDF in a real application.');
+                    closeExportModal();
+                    return;
+                case 'csv':
+                    content = 'Joke Text,Category,Date Saved,Rating\n';
+                    content += favorites.map(joke => `"${joke.text.replace(/"/g, '""')}",${formatCategoryName(joke.category)},${joke.date},${joke.rating || ''}`).join('\n');
+                    mimeType = 'text/csv';
+                    fileName = 'favorite-jokes.csv';
+                    break;
+                default:
+                    return;
+            }
+            
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            closeExportModal();
+        }
+        
+        // Generate first joke
+        generateNewJoke();
     </script>
 </body>
 </html>
