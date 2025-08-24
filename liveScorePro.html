@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiveScore Pro - Real-time Sports Updates</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .live-pulse {
+            animation: pulse 2s infinite;
+        }
+        .stat-bar {
+            height: 6px;
+            border-radius: 3px;
+        }
+        .play-by-play-item {
+            transition: all 0.3s ease;
+        }
+        .play-by-play-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-gray-800 shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-running text-2xl text-blue-400"></i>
+                <h1 class="text-xl font-bold">LiveScore<span class="text-blue-400">Pro</span></h1>
+            </div>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#" class="hover:text-blue-400">Home</a>
+                <a href="#" class="hover:text-blue-400">NBA</a>
+                <a href="#" class="hover:text-blue-400">NFL</a>
+                <a href="#" class="hover:text-blue-400">MLB</a>
+                <a href="#" class="hover:text-blue-400">Soccer</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-full text-sm">
+                    <i class="fas fa-bell mr-1"></i> Alerts
+                </button>
+                <button class="md:hidden">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Game Header -->
+        <div class="bg-gray-800 rounded-lg shadow-lg mb-6 p-4">
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center">
+                    <span class="bg-red-500 text-xs px-2 py-1 rounded-full mr-2 flex items-center">
+                        <span class="live-pulse mr-1">●</span> LIVE
+                    </span>
+                    <span class="text-sm text-gray-300">NBA • 4th Q • 2:15 remaining</span>
+                </div>
+                <div class="flex items-center text-sm">
+                    <i class="fas fa-star text-yellow-400 mr-1"></i>
+                    <span class="text-gray-300">Favorite</span>
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center py-4">
+                <div class="text-center w-1/3">
+                    <img src="https://cdn.nba.com/logos/nba/1610612747/primary/L/logo.svg" alt="Lakers" class="h-16 mx-auto mb-2">
+                    <h3 class="font-bold text-lg">Lakers</h3>
+                    <p class="text-gray-300">(42-30)</p>
+                </div>
+                
+                <div class="text-center w-1/3">
+                    <div class="text-4xl font-bold">
+                        <span class="text-blue-400">102</span> - <span>100</span>
+                    </div>
+                    <div class="text-sm text-gray-400 mt-1">LAL leads by 2</div>
+                    <div class="mt-2 flex justify-center space-x-2">
+                        <button class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-full text-xs">
+                            <i class="fas fa-bell mr-1"></i> Follow
+                        </button>
+                        <button class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-full text-xs">
+                            <i class="fas fa-video mr-1"></i> Watch
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="text-center w-1/3">
+                    <img src="https://cdn.nba.com/logos/nba/1610612738/primary/L/logo.svg" alt="Celtics" class="h-16 mx-auto mb-2">
+                    <h3 class="font-bold text-lg">Celtics</h3>
+                    <p class="text-gray-300">(50-22)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-700 mb-4">
+            <button class="tab-btn px-4 py-2 font-medium border-b-2 border-blue-500 text-blue-400" data-tab="stats">Stats</button>
+            <button class="tab-btn px-4 py-2 font-medium text-gray-400 hover:text-white" data-tab="plays">Play-by-Play</button>
+            <button class="tab-btn px-4 py-2 font-medium text-gray-400 hover:text-white" data-tab="standings">Standings</button>
+            <button class="tab-btn px-4 py-2 font-medium text-gray-400 hover:text-white" data-tab="history">History</button>
+        </div>
+
+        <!-- Stats Tab -->
+        <div id="stats" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Team Stats -->
+                <div class="bg-gray-800 rounded-lg shadow-lg p-4">
+                    <h3 class="font-bold text-lg mb-4 border-b border-gray-700 pb-2">Team Statistics</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Field Goal %</span>
+                                <span>48.2% - 45.7%</span>
+                            </div>
+                            <div class="flex h-2 bg-gray-700 rounded-full overflow-hidden">
+                                <div class="bg-blue-500" style="width: 48.2%"></div>
+                                <div class="bg-green-500" style="width: 45.7%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-400 mt-1">
+                                <span>LAL</span>
+                                <span>BOS</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>3-Point %</span>
+                                <span>36.8% - 34.2%</span>
+                            </div>
+                            <div class="flex h-2 bg-gray-700 rounded-full overflow-hidden">
+                                <div class="bg-blue-500" style="width: 36.8%"></div>
+                                <div class="bg-green-500" style="width: 34.2%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Rebounds</span>
+                                <span>42 - 38</span>
+                            </div>
+                            <div class="flex h-2 bg-gray-700 rounded-full overflow-hidden">
+                                <div class="bg-blue-500" style="width: 52.5%"></div>
+                                <div class="bg-green-500" style="width: 47.5%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Assists</span>
+                                <span>24 - 22</span>
+                            </div>
+                            <div class="flex h-2 bg-gray-700 rounded-full overflow-hidden">
+                                <div class="bg-blue-500" style="width: 52.2%"></div>
+                                <div class="bg-green-500" style="width: 47.8%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Turnovers</span>
+                                <span>12 - 15</span>
+                            </div>
+                            <div class="flex h-2 bg-gray-700 rounded-full overflow-hidden">
+                                <div class="bg-blue-500" style="width: 44.4%"></div>
+                                <div class="bg-green-500" style="width: 55.6%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Player Stats -->
+                <div class="bg-gray-800 rounded-lg shadow-lg p-4">
+                    <h3 class="font-bold text-lg mb-4 border-b border-gray-700 pb-2">Top Performers</h3>
+                    <div class="space-y-4">
+                        <!-- Lakers Player -->
+                        <div class="flex items-center">
+                            <img src="https://cdn.nba.com/headshots/nba/latest/260x190/2544.png" alt="LeBron James" class="w-12 h-12 rounded-full mr-3">
+                            <div class="flex-1">
+                                <div class="flex justify-between">
+                                    <h4 class="font-medium">LeBron James</h4>
+                                    <span class="text-blue-400 font-bold">28 PTS</span>
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    <span>8 REB</span> • <span>6 AST</span> • <span>2 STL</span> • <span>52% FG</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5 mt-1">
+                                    <div class="bg-blue-500 h-1.5 rounded-full" style="width: 82%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Celtics Player -->
+                        <div class="flex items-center">
+                            <img src="https://cdn.nba.com/headshots/nba/latest/260x190/1628369.png" alt="Jayson Tatum" class="w-12 h-12 rounded-full mr-3">
+                            <div class="flex-1">
+                                <div class="flex justify-between">
+                                    <h4 class="font-medium">Jayson Tatum</h4>
+                                    <span class="text-green-400 font-bold">30 PTS</span>
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    <span>5 REB</span> • <span>4 AST</span> • <span>1 STL</span> • <span>48% FG</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5 mt-1">
+                                    <div class="bg-green-500 h-1.5 rounded-full" style="width: 78%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Lakers Player 2 -->
+                        <div class="flex items-center">
+                            <img src="https://cdn.nba.com/headshots/nba/latest/260x190/203076.png" alt="Anthony Davis" class="w-12 h-12 rounded-full mr-3">
+                            <div class="flex-1">
+                                <div class="flex justify-between">
+                                    <h4 class="font-medium">Anthony Davis</h4>
+                                    <span class="text-blue-400 font-bold">22 PTS</span>
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    <span>12 REB</span> • <span>3 AST</span> • <span>4 BLK</span> • <span>55% FG</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5 mt-1">
+                                    <div class="bg-blue-500 h-1.5 rounded-full" style="width: 75%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Celtics Player 2 -->
+                        <div class="flex items-center">
+                            <img src="https://cdn.nba.com/headshots/nba/latest/260x190/1627759.png" alt="Jaylen Brown" class="w-12 h-12 rounded-full mr-3">
+                            <div class="flex-1">
+                                <div class="flex justify-between">
+                                    <h4 class="font-medium">Jaylen Brown</h4>
+                                    <span class="text-green-400 font-bold">24 PTS</span>
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    <span>6 REB</span> • <span>3 AST</span> • <span>2 STL</span> • <span>50% FG</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5 mt-1">
+                                    <div class="bg-green-500 h-1.5 rounded-full" style="width: 72%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quarter Breakdown -->
+            <div class="bg-gray-800 rounded-lg shadow-lg p-4 mb-6">
+                <h3 class="font-bold text-lg mb-4 border-b border-gray-700 pb-2">Quarter Breakdown</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-gray-700">
+                                <th class="text-left py-2">Team</th>
+                                <th class="text-center py-2">1st</th>
+                                <th class="text-center py-2">2nd</th>
+                                <th class="text-center py-2">3rd</th>
+                                <th class="text-center py-2">4th</th>
+                                <th class="text-center py-2">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-700">
+                                <td class="py-3 flex items-center">
+                                    <img src="https://cdn.nba.com/logos/nba/1610612747/primary/L/logo.svg" alt="Lakers" class="h-6 mr-2">
+                                    <span>Lakers</span>
+                                </td>
+                                <td class="text-center py-3">28</td>
+                                <td class="text-center py-3">25</td>
+                                <td class="text-center py-3">24</td>
+                                <td class="text-center py-3 text-blue-400 font-medium">25</td>
+                                <td class="text-center py-3 font-bold">102</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 flex items-center">
+                                    <img src="https://cdn.nba.com/logos/nba/1610612738/primary/L/logo.svg" alt="Celtics" class="h-6 mr-2">
+                                    <span>Celtics</span>
+                                </td>
+                                <td class="text-center py-3">26</td>
+                                <td class="text-center py-3">27</td>
+                                <td class="text-center py-3">22</td>
+                                <td class="text-center py-3 text-green-400 font-medium">25</td>
+                                <td class="text-center py-3 font-bold">100</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Play-by-Play Tab -->
+        <div id="plays" class="tab-content">
+            <div class="bg-gray-800 rounded-lg shadow-lg p-4">
+                <h3 class="font-bold text-lg mb-4 border-b border-gray-700 pb-2">Play-by-Play</h3>
+                <div class="space-y-3">
+                    <div class="play-by-play-item bg-gray-700 p-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <span class="text-xs text-gray-400 mr-3">2:15 - 4th Q</span>
+                                <span class="text-blue-400 font-medium">LAL 102 - BOS 100</span>
+                            </div>
+                            <span class="text-xs bg-gray-600 px-2 py-1 rounded">Lakers Ball</span>
+                        </div>
+                        <p class="mt-1">LeBron James hits a 3-pointer! Lakers lead by 2.</p>
+                    </div>
+                    
+                    <div class="play-by-play-item bg-gray-700 p-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <span class="text-xs text-gray-400 mr-3">2:30 - 4th Q</span>
+                                <span class="text-green-400 font-medium">LAL 99 - BOS 100</span>
+                            </div>
+                            <span class="text-xs bg-gray-600 px-2 py-1 rounded">Celtics Ball</span>
+                        </div>
+                        <p class="mt-1">Jayson Tatum misses 18-foot jumper. Anthony Davis defensive rebound.</p>
+                    </div>
+                    
+                    <div class="play-by-play-item bg-gray-700 p-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <span class="text-xs text-gray-400 mr-3">2:45 - 4th Q</span>
+                                <span class="text-green-400 font-medium">LAL 99 - BOS 100</span>
+                            </div>
+                            <span class="text-xs bg-gray-600 px-2 py-1 rounded">Timeout</span>
+                        </div>
+                        <p class="mt-1">Lakers timeout: full (2:45 remaining in 4th quarter).</p>
+                    </div>
+                    
+                    <div class="play-by-play-item bg-gray-700 p-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <span class="text-xs text-gray-400 mr-3">2:50 - 4th Q</span>
+                                <span class="text-green-400 font-medium">LAL 99 - BOS 100</span>
+                            </div>
+                            <span class="text-xs bg-gray-600 px-2 py-1 rounded">Celtics Ball</span>
+                        </div>
+                        <p class="mt-1">Jaylen Brown makes driving layup. Celtics take the lead.</p>
+                    </div>
+                    
+                    <div class="play-by-play-item bg-gray-700 p-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <span class="text-xs text-gray-400 mr-3">3:10 - 4th Q</span>
+                                <span class="text-blue-400 font-medium">LAL 99 - BOS 98</span>
+                            </div>
+                            <span class="text-xs bg-gray-600 px-2 py-1 rounded">Lakers Ball</span>
+                        </div>
+                        <p class="mt-1">Anthony Davis makes two point shot (Russell Westbrook assists).</p>
+                    </div>
+                    
+                    <button class="w-full py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium">
+                        Load More Plays
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Standings Tab -->
+        <div id="standings" class="tab-content">
+            <div class="bg-gray-800 rounded-lg shadow-lg p-4 mb-6">
+                <h3 class="font-bold text-lg mb-4 border-b border-gray-700 pb-2">Western Conference Standings</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-gray-700">
+                                <th class="text-left py-2">Team</th>
+                                <th class="text-center py-2">W</th>
+                                <th class="text-center py-2">L</th>
+                                <th class="text-center py-2">PCT</th>
+                                <th class="text-center py-2">GB</th>
+                                <th class="text-center py-2">L10</th>
+                                <th class="text-center py-2">STRK</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-700">
+                                <td class="py-3 flex items-center">
+                                    <span class="text-yellow-400 font-bold mr-2">1</span>
+                                    <img src="https://cdn.nba.com/logos/nba/1610612743/primary/L/logo.svg" alt="Nuggets" class="h-6 mr-2">
+                                    <span>Denver Nuggets</span>
+                                </td>
+                                <td class="text-center py-3">48</td>
+                                <td class="text-center py-3">24</td>
+                                <td class="text-center py-3">.667</td>
+                                <td class="text-center py-3">—</td>
+                                <td class="text-center py-3">7-3</td>
+                                <td class="text-center py-3">W3</td>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <td class="py-3 flex items-center">
+                                    <span class="text-gray-300 font-bold mr-2">2</span>
+                                    <img src="https://cdn.nba.com/logos/nba/1610612763/primary/L/logo.svg" alt="Grizzlies" class="h-6 mr-2">
+                                    <span>Memphis Grizzlies</span>
+                                </td>
+                                <td class="text-center py-3">46</td>
+                                <td class="text-center py-3">27</td>
+                                <td class="text-center py-3">.630</td>
+                                <td class="text-center py-3">2.5</td>
+                                <td class="text-center py-3">6-4</td>
+                                <td class="text-center py-3">W1</td>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <td class="py-3 flex items-center">
+                                    <span class="text-gray-300 font-bold mr-2">3</span>
+                                    <img src="https://cdn.nba.com/logos/nba/1610612758/primary/L/logo.svg" alt="Kings" class="h-6 mr-2">
+                                    <span>Sacramento Kings</span>
+                                </td>
+                                <td class="text-center py-3">45</td>
+                                <td class="text-center py-3">28</td>
+                                <td class="text-center py-3">.616</td>
+                                <td class="text-center py-3">3.5</td>
+                                <td class="text-center py-3">5-5</td>
+                                <td class="text-center py-3">L1</td>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <td class="py-3 flex items-center">
+                                    <span class="text-gray-300 font-bold mr-2">4</span>
+                                    <img src="https://cdn.nba.com/logos/nba/1610612756/primary/L/logo.svg" alt="Suns" class="h-6 mr-2">
+                                    <span>Phoenix Suns</span>
+                                </td>
+                                <td class="text-center py-3">40</td>
+                                <td class="text-center py-3">33</td>
+                                <td class="text-center py-3">.548</td>
+                                <td class="text-center py-3">8.5</td>
+                                <td class="text-center py-3">7-3</td>
+                                <td class="text-center py-3">W3</td>
+                            </tr>
+                            <tr class="border-b border-gray-700 bg-blue-900 bg-opacity-30">
+                                <td class="py-3 flex items-center">
+                                    <span class="text-gray-300 font-bold mr-2">5</span>
+                                    <img src="https://cdn.nba.com/logos/nba/1610612747/primary/L/logo.svg" alt="Lakers" class="h-6 mr-2">
+                                    <span>Los Angeles Lakers</span>
+                                </td>
+                                <td class="text-center py-3">38</td>
+                                <td class="text-center py-3">35</td>
+                                <td class="text-center py-3">.521</td>
+                                <td class="text-center py-3">10.5</td>
+                                <td class="text-center py-3">8-2</td>
+                                <td class="text-center py-3">W4</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 flex items-center">
+                                    <span class="text-gray-300 font-bold mr-2">6</span>
+                                    <img src="https://cdn.nba.com/logos/nba/1610612744/primary/L/logo.svg" alt="Warriors" class="h-6 mr-2">
+                                    <span>Golden State Warriors</span>
+                                </td>
+                                <td class="text-center py-3">38</td>
+                                <td class="text-center py-3">36</td>
+                                <td class="text-center py-3">.514</td>
+                                <td class="text-center py-3">11.0</td>
+                                <td class="text-center py-3">5-5</td>
+                                <td class="text-center py-3">L1</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg shadow-lg p-4">
+                <h3 class="font-bold text-lg mb-4 border-b border-gray-700 pb-2">Eastern Conference Standings</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-gray-700">
+                                <th class="text-left py-2">Team</th>
+                                <th class="text-center py-2">W</th>
+                                <th class="text-center py-2">L</th>
+                                <th class="text-center py-2">PCT</th>
+                                <th class="text-center py-2">GB</th>
+                                <th class="text-center py-2">L10</th>
+                                <th class="text-center py-2">STRK</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-700">
+                                <td class="py-3 flex items-center">
+                                    <span class="text-yellow-400 font-bold mr-2">1</span>
+                                    <img src="https://cdn.nba.com/logos/nba/1610612749/primary/L/logo.svg" alt="Bucks" class="h-6 mr-2">
+                                    <span>Milwaukee Bucks</span>
+                                </td>
+                                <td class="text-center py-3">53</td>
+                                <td class="text-center py-3">20</td>
+                                <td class="text-center py-3">.726</td>
+                                <td class="text-center py-3">—</td>
+                                <td class="text-center py-3">8-2</td>
+                                <td class="text-center py-3">W2</td>
+                            </tr>
+                            <tr class="border-b border-gray-700 bg-green-900 bg-opacity-30">
+                                <td class="py-3 flex items-center">
+                                    <span class="text-gray-300 font-bold mr-2">2</span>
+                                    <img src="https://cdn.nba.com/logos/nba/1610612738/primary/L/logo.svg" alt="Celtics" class="h-6 mr-2">
+                                    <span>Boston Celtics</span>
+                                </td>
+                                <td class="text-center py-3">50</td>
+                                <td class="text-center py-3">23</td>
+                                <td class="text-center py-3">.685</td>
+                                <td class="text-center py-3">3.0</td>
+                                <td class="text-center py-3">6-4</td>
+                                <td class="text-center py-3">L1</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 flex items-center">
+                                    <span class="text-gray-300 font-bold mr-2">3</span>
+                                    <img src="https://cdn.nba.com/logos/nba/1610612755/primary/L/logo.svg" alt="76ers" class="h-6 mr-2">
+                                    <span>Philadelphia 76ers</span>
+                                </td>
+                                <td class="text-center py-3">49</td>
+                                <td class="text-center py-3">25</td>
+                                <td class="text-center py-3">.662</td>
+                                <td class="text-center py-3">4.5</td>
+                                <td class="text-center py-3">7-3</td>
+                                <td class="text-center py-3">W1</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history" class="tab-content">
+            <div class="bg-gray-800 rounded-lg shadow-lg p-4 mb-6">
+                <h3 class="font-bold text-lg mb-4 border-b border-gray-700 pb-2">Head-to-Head History</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-gray-700">
+                                <th class="text-left py-2">Date</th>
+                                <th class="text-left py-2">Matchup</th>
+                                <th class="text-center py-2">Score</th>
+                                <th class="text-center py-2">High Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-700">
+                                <td class="py-3">Dec 13, 2022</td>
+                                <td class="py-3">LAL @ BOS</td>
+                                <td class="py-3 text-center font-bold">BOS 122 - 118</td>
+                                <td class="py-3 text-center">Tatum 44, Brown 25, James 33, Davis 37</td>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <td class="py-3">Apr 15, 2022</td>
+                                <td class="py-3">BOS @ LAL</td>
+                                <td class="py-3 text-center font-bold">BOS 128 - 117</td>
+                                <td class="py-3 text-center">Tatum 37, Brown 26, James 34, Westbrook 24</td>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <td class="py-3">Nov 19, 2021</td>
+                                <td class="py-3">LAL @ BOS</td>
+                                <td class="py-3 text-center font-bold">BOS 130 - 108</td>
+                                <td class="py-3 text-center">Tatum 37, Schroder 21, James 23, Davis 31</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3">Jan 30, 2021</td>
+                                <td class="py-3">BOS @ LAL</td>
+                                <td class="py-3 text-center font-bold">LAL 96 - 95</td>
+                                <td class="py-3 text-center">Tatum 30, Brown 28, James 21, Davis 27</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-gray-800 rounded-lg shadow-lg p-4">
+                    <h3 class="font-bold text-lg mb-4 border-b border-gray-700 pb-2">Recent Form - Lakers</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-2 bg-gray-700 rounded">
+                            <div class="flex items-center">
+                                <span class="text-green-500 font-bold mr-2">W</span>
+                                <span>LAL 116 - 111 DAL</span>
+                            </div>
+                            <span class="text-xs text-gray-400">Mar 17</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-700 rounded">
+                            <div class="flex items-center">
+                                <span class="text-green-500 font-bold mr-2">W</span>
+                                <span>LAL 123 - 108 NOP</span>
+                            </div>
+                            <span class="text-xs text-gray-400">Mar 14</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-700 rounded">
+                            <div class="flex items-center">
+                                <span class="text-green-500 font-bold mr-2">W</span>
+                                <span>LAL 122 - 112 TOR</span>
+                            </div>
+                            <span class="text-xs text-gray-400">Mar 10</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-700 rounded">
+                            <div class="flex items-center">
+                                <span class="text-red-500 font-bold mr-2">L</span>
+                                <span>MEM 112 - 103 LAL</span>
+                            </div>
+                            <span class="text-xs text-gray-400">Mar 7</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-700 rounded">
+                            <div class="flex items-center">
+                                <span class="text-green-500 font-bold mr-2">W</span>
+                                <span>LAL 113 - 105 GSW</span>
+                            </div>
+                            <span class="text-xs text-gray-400">Mar 5</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800 rounded-lg shadow-lg p-4">
+                    <h3 class="font-bold text-lg mb-4 border-b border-gray-700 pb-2">Recent Form - Celtics</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-2 bg-gray-700 rounded">
+                            <div class="flex items-center">
+                                <span class="text-red-500 font-bold mr-2">L</span>
+                                <span>UTA 118 - 117 BOS</span>
+                            </div>
+                            <span class="text-xs text-gray-400">Mar 18</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-700 rounded">
+                            <div class="flex items-center">
+                                <span class="text-green-500 font-bold mr-2">W</span>
+                                <span>BOS 126 - 112 POR</span>
+                            </div>
+                            <span class="text-xs text-gray-400">Mar 15</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-700 rounded">
+                            <div class="flex items-center">
+                                <span class="text-green-500 font-bold mr-2">W</span>
+                                <span>BOS 134 - 125 ATL</span>
+                            </div>
+                            <span class="text-xs text-gray-400">Mar 11</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-700 rounded">
+                            <div class="flex items-center">
+                                <span class="text-red-500 font-bold mr-2">L</span>
+                                <span>CLE 118 - 114 BOS</span>
+                            </div>
+                            <span class="text-xs text-gray-400">Mar 6</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-700 rounded">
+                            <div class="flex items-center">
+                                <span class="text-green-500 font-bold mr-2">W</span>
+                                <span>BOS 115 - 93 NYK</span>
+                            </div>
+                            <span class="text-xs text-gray-400">Mar 5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Games -->
+        <div class="mt-8">
+            <h2 class="text-xl font-bold mb-4 border-b border-gray-700 pb-2">Upcoming Games</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="bg-gray-800 rounded-lg shadow-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm text-gray-400">Friday, Mar 24 • 7:30 PM ET</span>
+                        <span class="text-xs bg-gray-700 px-2 py-1 rounded">National TV</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2">
+                        <div class="flex items-center">
+                            <img src="https://cdn.nba.com/logos/nba/1610612738/primary/L/logo.svg" alt="Celtics" class="h-8 mr-2">
+                            <span>Celtics</span>
+                        </div>
+                        <span class="text-sm text-gray-400">@</span>
+                        <div class="flex items-center">
+                            <img src="https://cdn.nba.com/logos/nba/1610612751/primary/L/logo.svg" alt="Nets" class="h-8 mr-2">
+                            <span>Nets</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800 rounded-lg shadow-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm text-gray-400">Sunday, Mar 26 • 3:30 PM ET</span>
+                        <span class="text-xs bg-gray-700 px-2 py-1 rounded">ABC</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2">
+                        <div class="flex items-center">
+                            <img src="https://cdn.nba.com/logos/nba/1610612747/primary/L/logo.svg" alt="Lakers" class="h-8 mr-2">
+                            <span>Lakers</span>
+                        </div>
+                        <span class="text-sm text-gray-400">vs</span>
+                        <div class="flex items-center">
+                            <img src="https://cdn.nba.com/logos/nba/1610612741/primary/L/logo.svg" alt="Bulls" class="h-8 mr-2">
+                            <span>Bulls</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800 rounded-lg shadow-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm text-gray-400">Monday, Mar 27 • 7:00 PM ET</span>
+                        <span class="text-xs bg-gray-700 px-2 py-1 rounded">NBA TV</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2">
+                        <div class="flex items-center">
+                            <img src="https://cdn.nba.com/logos/nba/1610612745/primary/L/logo.svg" alt="Rockets" class="h-8 mr-2">
+                            <span>Rockets</span>
+                        </div>
+                        <span class="text-sm text-gray-400">@</span>
+                        <div class="flex items-center">
+                            <img src="https://cdn.nba.com/logos/nba/1610612738/primary/L/logo.svg" alt="Celtics" class="h-8 mr-2">
+                            <span>Celtics</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 mt-12 py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                    <i class="fas fa-running text-xl text-blue-400"></i>
+                    <h2 class="text-lg font-bold">LiveScore<span class="text-blue-400">Pro</span></h2>
+                </div>
+                <div class="flex space-x-6 mb-4 md:mb-0">
+                    <a href="#" class="hover:text-blue-400">About</a>
+                    <a href="#" class="hover:text-blue-400">Privacy</a>
+                    <a href="#" class="hover:text-blue-400">Terms</a>
+                    <a href="#" class="hover:text-blue-400">Contact</a>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-twitter text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-facebook text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-instagram text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-youtube text-xl"></i></a>
+                </div>
+            </div>
+            <div class="mt-6 text-center text-sm text-gray-400">
+                <p>© 2023 LiveScorePro. All rights reserved. Data provided by NBA.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab functionality
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and content
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('border-b-2', 'border-blue-500', 'text-blue-400');
+                    btn.classList.add('text-gray-400');
+                });
+                
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Add active class to clicked button and corresponding content
+                button.classList.add('border-b-2', 'border-blue-500', 'text-blue-400');
+                button.classList.remove('text-gray-400');
+                
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Simulate live score update
+        function updateLiveScore() {
+            const scoreElement = document.querySelector('.text-4xl.font-bold span:last-child');
+            const currentScore = parseInt(scoreElement.textContent);
+            scoreElement.textContent = currentScore + 2;
+            
+            const playByPlay = document.querySelector('.play-by-play-item');
+            playByPlay.remove();
+            
+            // Add new play to the top
+            const container = document.querySelector('#plays .space-y-3');
+            const newPlay = document.createElement('div');
+            newPlay.className = 'play-by-play-item bg-gray-700 p-3 rounded-lg';
+            newPlay.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <span class="text-xs text-gray-400 mr-3">2:00 - 4th Q</span>
+                        <span class="text-blue-400 font-medium">LAL 104 - BOS 100</span>
+                    </div>
+                    <span class="text-xs bg-gray-600 px-2 py-1 rounded">Celtics Ball</span>
+                </div>
+                <p class="mt-1">Jayson Tatum makes driving layup. Celtics cut the lead to 2.</p>
+            `;
+            container.insertBefore(newPlay, container.firstChild);
+            
+            // Update game clock
+            const clockElement = document.querySelector('.text-sm.text-gray-300');
+            clockElement.textContent = 'NBA • 4th Q • 2:00 remaining';
+        }
+        
+        // Update score every 30 seconds for demo purposes
+        setInterval(updateLiveScore, 30000);
+    </script>
+</body>
+</html>
